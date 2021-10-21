@@ -1,0 +1,6 @@
+export const ACCESS_TOKEN = 'Access-Token'
+export const USER_ACCESS_CODE = 'Access-code'
+export const USER_NAME = 'Login_Username'
+export const USER_INFO = 'Login_Userinfo'
+export const USER_AUTH = 'LOGIN_USER_BUTTON_AUTH'
+export const USER_SALENO = 'Login_Usersaleno'

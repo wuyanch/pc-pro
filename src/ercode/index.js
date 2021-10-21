@@ -1,0 +1,1 @@
+export const ERCODE = 'https://open.work.weixin.qq.com/wwopen/sso/qrConnect?appid=wwdea9778d2ae05422&agentid=1000036&redirect_uri=http%3A%2F%2Fgdbbc.pension.taikang.com%2Fcrm%2Findex.html%23&state=ercode'
