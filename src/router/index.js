@@ -32,9 +32,9 @@ const routes = [
     component: () => import('../views/mobileHome.vue')
   },
   {
-    path: '/error',
+    path: '/errorpage',
     name: 'errorPage',
-    component: () => import('../views/error.vue')
+    component: () => import('../views/errorpage.vue')
   }
 ]
 

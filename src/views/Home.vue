@@ -10,10 +10,10 @@
         <el-aside class="left-aside" :width="isCollapse?'60px':'170px'">
           <el-menu :default-openeds="['1']" :collapse="isCollapse" :default-active=menu>
             <el-submenu index="1">
-              <template slot="title"><i class="el-icon-s-custom"></i><span>OTO线索池</span></template>
+              <template slot="title"><i class="el-icon-s-custom"></i><span>线索管理(PC版)</span></template>
               <el-menu-item-group>
-                <el-menu-item index="ClueLead" @click="changePage('ClueLead')">线索导入</el-menu-item>
-                <el-menu-item index="AssignCustomer" @click="changePage('AssignCustomer')">指派客户</el-menu-item>
+                <el-menu-item index="ClueLead" @click="changePage('ClueLead')">客户线索导入</el-menu-item>
+                <el-menu-item index="AssignCustomer" @click="changePage('AssignCustomer')">标记服务经理</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
           </el-menu>

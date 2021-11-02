@@ -107,7 +107,7 @@ import {ERCODE} from "@/ercode"
             Vue.ls.remove(USER_ACCESS_CODE)
             location.href = ERCODE
           } else {
-            this.$router.replace('/error')
+            this.$router.replace('/errorPage')
           }
           // this.$router.replace('/')
         }).catch((err) => {

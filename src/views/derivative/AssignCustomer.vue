@@ -4,13 +4,13 @@
     <div class="current-site">
       <span>当前位置：</span>
       <el-breadcrumb separator-class="el-icon-arrow-right">
-        <el-breadcrumb-item>OTO线索池</el-breadcrumb-item>
-        <el-breadcrumb-item>指派客户</el-breadcrumb-item>
+        <el-breadcrumb-item>线索管理(PC版)</el-breadcrumb-item>
+        <el-breadcrumb-item>标记服务经理</el-breadcrumb-item>
       </el-breadcrumb>
     </div>
     <!-- 内容 -->
     <div class="clue-content">
-      <p class="page-tip">说明：本页面用于主攻手或助理主攻手指派存量三级客户（即：客户已购买长期重疾或年金产品，但未在5G系统的客户列表中）。</p>
+      <p class="page-tip">说明：本页面用于主攻手或助理主攻手可以给存量三级客户标记服务经理，把客户线索导入到5G系统的“客户列表”中。（存量三级客户：客户已购买长期重疾或年金产品，但未在5G系统的客户列表中）。</p>
       <div class="dervative-item-code per-part-before per-part" data-part='01'>
         <p class="part">
           <span class="part-title">查询项目</span><span class="part-tip"> 说明：“项目编码”在“5G系统-项目概况”页面有，是<i> PM+9位 </i> 数字。</span>
@@ -131,7 +131,8 @@ export default {
       itemCodeTip: '',
       // 角色是否符合导入数据
       qualifications: false,
-      note: '请先查询项目，才能解锁以下功能',
+      // note: '请先查询项目，才能解锁以下功能',
+      note: '正在开发中，敬请期待',
       downrange: '',
       // 下载文件 missingDownloadFile错误提示语 missingDownloadFlag错误是否显示标识
       missingInformation: '',
@@ -233,7 +234,7 @@ export default {
           that.missingInformation = ''
           that.missingFlag = null
         }, 3000)
-        postAction('/customer/crs/import-crs/import-crs-info',importInfo).then(response => {
+        postAction('/customer/crs/import-crs/import-appoint-info',importInfo).then(response => {
           console.log(response)
           this.uploadLoading = !this.uploadLoading
         }).catch(error => {
@@ -262,7 +263,8 @@ export default {
    // 下载导入名单模板
     downTemplateFile () {
       this.downloadLoading = !this.downloadLoading
-      postAction('/customer/crs/import-crs/down/template/appoint').then(response => {
+      let params = {saleNo: Vue.ls.get(USER_SALENO) }
+      postAction('/customer/crs/import-crs/down/template/appoint',params).then(response => {
         console.log(response)
         // // 创建一个新的url，此url指向新建的Blob对象
         // let url = window.URL.createObjectURL(new Blob([response]))
@@ -491,9 +493,9 @@ export default {
     background: rgb(108 108 108 / 80%);
     z-index: 9;
     position: absolute;
-    top: -15px;
-    bottom: -15px;
-    left: -40px;
+    top: -165px;
+    bottom: -30px;
+    left: -60px;
     right: 0;
     border-radius: 10px;
     &::before{

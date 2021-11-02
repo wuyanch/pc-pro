@@ -4,13 +4,13 @@
     <div class="current-site">
       <span>当前位置：</span>
       <el-breadcrumb separator-class="el-icon-arrow-right">
-        <el-breadcrumb-item>OTO线索池</el-breadcrumb-item>
-        <el-breadcrumb-item>线索导入</el-breadcrumb-item>
+        <el-breadcrumb-item>线索管理(PC版)</el-breadcrumb-item>
+        <el-breadcrumb-item>客户线索导入</el-breadcrumb-item>
       </el-breadcrumb>
     </div>
     <!-- 内容 -->
     <div class="clue-content">
-       <p class="page-tip">说明：本页面用于组长或组员，把现有EXCEL表的客户线索导入到5G系统的“客户列表”中。</p>
+       <p class="page-tip">说明：本页面用于组长或组员，把现有EXCEL表的客户线索导入到5G系统的“客户列表”中。(只要没在5G系统里的，一、二、三级客户线索都可以导入。)</p>
       <div class="dervative-item-code per-part-before per-part"  data-part='01'>
         <p class="part">
           <span class="part-title">查询项目</span><span class="part-tip"> 说明：“项目编码”在“5G系统-项目概况”页面有，是<i> PM+9位 </i> 数字。</span>
@@ -418,7 +418,8 @@ export default {
     // 下载导入名单模板
     downTemplateFile () {
       this.downloadLoading = !this.downloadLoading
-      postAction('/customer/crs/import-crs/down/template/clue').then(response => {
+      let params = {saleNo: Vue.ls.get(USER_SALENO) }
+      postAction('/customer/crs/import-crs/down/template/clue',params).then(response => {
         console.log(response)
         // // 创建一个新的url，此url指向新建的Blob对象
         // let url = window.URL.createObjectURL(new Blob([response]))
