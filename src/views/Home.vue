@@ -14,6 +14,7 @@
               <el-menu-item-group>
                 <el-menu-item index="ClueLead" @click="changePage('ClueLead')">客户线索导入</el-menu-item>
                 <el-menu-item index="AssignCustomer" @click="changePage('AssignCustomer')">标记服务经理</el-menu-item>
+                <el-menu-item index="AddTargetDepartment" @click="changePage('AddTargetDepartment')">批量添加目标部门</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
           </el-menu>
@@ -49,7 +50,7 @@ export default {
     }
   },
   mounted () {
-    this.userName = Vue.ls.get(USER_NAME)?Vue.ls.get(USER_NAME):this.getUserName()
+    this.getUserName();
     this.getMenu()
   },
   methods: {
@@ -64,7 +65,7 @@ export default {
     getMenu () {
       const search = window.location.hash // 测试环境 正式环境
       const menuLength = search.split('/')
-      this.menu = menuLength[menuLength.length - 1] === '' ? 'ClueLead' : menuLength[menuLength.length - 1]
+      this.menu = menuLength[menuLength.length - 1] === '' || menuLength[menuLength.length - 1].indexOf('code') != -1? 'ClueLead' : menuLength[menuLength.length - 1]
     },
     shrink: function () {
       this.isCollapse = !this.isCollapse

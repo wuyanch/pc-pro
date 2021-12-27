@@ -11,11 +11,12 @@ import { axios } from '@/utils/request'
 // export default api
 
 //post
-export function postAction(url,parameter) {
+export function postAction(url,parameter,time) {
   return axios({
     url: url,
     method:'post' ,
-    data: parameter
+    data: parameter,
+    timeout: time || 30000
   })
 }
 

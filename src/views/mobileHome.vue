@@ -1,8 +1,11 @@
 <template>
     <div class="moblie-home">
-        <p class="tip"><i class="el-icon-warning-outline"></i>亲，请在电脑上使用这个功能哦~</p>
+        <p class="tip"><i class="el-icon-warning-outline"></i><br/>亲，请在电脑上使用这个功能哦~
+            <span class="tip-note"><br/>
+            【目前版本所有功能都涉及EXCEL表格上传、下载。后续会开放其他手机端的功能。】
+            </span>
+        </p>
         <div class="mobile-box">
-            <p class="title">线索管理(PC版)</p>
             <div>
                 <img :src=imgsrc alt="" srcset="">
             </div>
@@ -47,19 +50,23 @@ body{
     padding-top: 15px;
 }
 .el-icon-warning-outline {
-    font-size: 6vw;
+    font-size: 12vw;
     color: red;
     margin-right: 20px;
     vertical-align: middle;
 }
 .tip {
-    font-size: 4vw;
+    font-size: 6vw;
     margin: 20px 0 10px;
     color: red;
+    .tip-note{
+        font-size: 4vw;
+        color: #333;
+    }
 }
 .mobile-box{
     margin: 0 30px 30px 30px;
-    padding-bottom: 15px;
+    padding-bottom: 3px;
     box-shadow: 1px 1px 10px 1px #e7f0fb, -1px -1px 10px 1px #e7f0fb;
     border-radius: 20px;
 }
@@ -68,7 +75,7 @@ body{
     .content-title {
         text-align: left;
         font-weight: 700;
-        margin: 80px 0 15px 0;
+        margin: 50px 0 15px 0;
         span{
             font-size: 2vh;
             border-radius: 50px;
@@ -79,7 +86,7 @@ body{
         }
     }
     .content-detail{
-        margin-top: 35px;
+        margin-top: 25px;
         font-size: 2vh;
         text-align: left;
         line-height: 60px;
@@ -88,12 +95,12 @@ body{
             color: #999;
             font-size: 1.9vh;
             font-weight: normal;
-            
         }
     }
 }
 img{
+    margin-top: 20px;
     object-fit: contain;
-    width: 90%;
+    width: 80%;
 }
 </style>

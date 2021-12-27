@@ -23,6 +23,10 @@ const routes = [
       {
         path: 'AssignCustomer',
         component: () => import('../views/derivative/AssignCustomer.vue')
+      },
+      {
+        path: 'AddTargetDepartment',
+        component: () => import('../views/derivative/AddTargetDepartment.vue')
       }
     ]
   },

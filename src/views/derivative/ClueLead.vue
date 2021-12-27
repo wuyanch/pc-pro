@@ -34,12 +34,18 @@
       <div class="show-function" >
         <div class="per-part-before per-part" data-part='02'>
           <p class="part">
-            <span class="part-title">线索导入</span><span class="part-tip">说明： 组长、组员可为自己导入线索。如果客户已在5G系统中，请登陆5G系统进行客户管理。</span>
+            <span class="part-title">导入线索</span><span class="part-tip">说明：1、下载模板。2、按模板整理名单。3、选择所属小组及需上传的文件。4、确认上传。</span>
           </p>
           <div>
-              <p class="related-content"><span>服务经理： {{ saleNo }}</span><span>项目名称： {{itemData.projcetName}}</span></p>
+              <span class="show-dec show-dec-write-p">核对项目</span><p class="related-content"><span>服务经理： {{ saleNo }}</span><span>项目名称： {{itemData.projectName}}</span></p>
+              <p>
+                <span class="show-dec">下载模板</span>
+                <el-button class="down-template" @click.stop="downTemplateFile" :loading="downloadLoading"><i class="el-icon-download"></i> 下载导入模板</el-button>
+                <el-button class="down-template" @click.stop="downTemplateFileDepart" :loading="downloadLoadingDepart"><i class="el-icon-download"></i> 下载现有“目标部门”</el-button>
+              </p>
               <!-- 有角色，有资格导入 -->
-              <div>
+              <span class="show-dec show-dec-write-f">上传信息</span>
+              <div class="show-dec-writeF">
                   <el-form :inline="true"  class="demo-form-inline">
                       <el-form-item label="所属小组：" required>
                           <el-select v-model="affiliatedGroup" placeholder="请选择所属小组">
@@ -60,14 +66,12 @@
                               :before-upload="beforeUpload"
                               :on-exceed="changeFile">
                               <i class="el-icon-upload"></i>
-                              <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+                              <div class="el-upload__text">将文件拖到此处，或<em>点击选择文件</em></div>
                           </el-upload>
                       </el-form-item>
-                      <el-form-item class="part-button">
-                        <el-button type="primary" @click.stop="submitUpload" :loading="uploadLoading" class="query-code up-load-button"><i class="el-icon-upload2"></i> 导入名单</el-button>
-                        <el-button class="down-template" @click.stop="downTemplateFile" :loading="downloadLoading"><i class="el-icon-download"></i> 下载导入模板</el-button>
-                      </el-form-item>
-                      <el-form-item>
+                      <!-- class="part-button up-load-button" -->
+                      <el-form-item >
+                        <el-button type="primary" @click.stop="submitUpload" :loading="uploadLoading" class="query-code"><i class="el-icon-upload2"></i> 确认上传</el-button>
                           <span :class="[missingInformation == ''?'':(missingFlag == true ? 'missing-information':'no-missing-information')]">
                             <i :class="[missingInformation == ''?'':(missingFlag == true ? 'el-icon-circle-close':'el-icon-circle-check')]"></i>
                             {{missingInformation}}
@@ -77,11 +81,11 @@
               </div>
           </div>
         </div>
-        <div class="per-part-before per-part" data-part='03'>
-          <p class="part"><span class="part-title">导入结果</span><span class="part-tip"> 说明：线索导入后，请在"5G系统-获客概况-客户列表"处管理客户。</span></p>
+        <div class="per-part-before per-part per-part-three" data-part='03'>
+          <p class="part"><span class="part-title">查看结果</span><span class="part-tip"> 说明：1、请下载清单查看上传结果。2、客户线索成功导入5G系统的，请在"5G系统-获客概况-客户列表"处管理客户。</span></p>
           <div>
               <div class="inline-block">
-                  <span><i class="red-i">*</i>导入日期：</span>
+                  <span><i class="red-i">*</i>上传日期：</span>
                   <el-date-picker
                       v-model="downrange"
                       type="daterange"
@@ -94,7 +98,7 @@
                   >
                   </el-date-picker>
               </div>
-              <el-button type="primary" class="query-code"  @click.stop="downloadFile" :loading="downloadFileLoading"><i class="el-icon-download"></i> 下载导入结果</el-button>
+              <el-button type="primary" class="query-code"  @click.stop="downloadFile" :loading="downloadFileLoading"><i class="el-icon-download"></i> 下载结果清单</el-button>
               <span :class="[downloadFileInformation == ''?'':(downloadFlag == true ? 'missing-information':'no-missing-information')]">
                 <i :class="[downloadFileInformation == ''?'':(downloadFlag == true ? 'el-icon-circle-close':'el-icon-circle-check')]"></i>
                 {{downloadFileInformation}}
@@ -123,6 +127,7 @@ export default {
       downloadLoading: false,
       uploadLoading: false,
       downloadFileLoading: false,
+      downloadLoadingDepart:false,
       fileList: [],
       // 录入的项目编码
       itemCode: '',
@@ -179,7 +184,7 @@ export default {
       downloadFlag: null,
       // 提示
       errorTip: null,
-      saleNo: Vue.ls.get(USER_SALENO)
+      saleNo: ''
     }
   },
   created () {
@@ -195,7 +200,7 @@ export default {
      this.enterSearch()
   },
   mounted () {
-    this.saleNo = Vue.ls.get(USER_SALENO)?Vue.ls.get(USER_SALENO):this.getUserSaleNo()
+    this.getUserSaleNo();
   },
   methods: {
      // 获取用户sale
@@ -290,12 +295,22 @@ export default {
       // 检验是否选择组号和上传文件
       if (this.affiliatedGroup === '' || this.fileList.length === 0) {
         // this.$alert('没有选择小组或者上传文件')
-        this.missingInformation = '导入失败：没有选择小组或者没有上传文件'
-        this.missingFlag = true
-        setTimeout(function () {
-          that.missingInformation = ''
-          that.missingFlag = null
-        }, 5000)
+        // this.missingInformation = '导入失败：没有选择小组或者没有上传文件'
+        // this.missingFlag = true
+        // setTimeout(function () {
+        //   that.missingInformation = ''
+        //   that.missingFlag = null
+        // }, 5000)
+        this.$confirm('导入失败：没有选择小组或者没有上传文件', '失败', {
+          confirmButtonText: '确定',
+          showCancelButton: false,
+          type: 'error'
+        }).then(() => {
+          
+        }).catch(() => {
+                
+        });
+        
       } else {
         // 获取选取的组号
         const checkGroupA = this.itemData.saleTeamInfoList.filter((value) => value.stmCode === this.affiliatedGroup)
@@ -305,30 +320,49 @@ export default {
         importInfo.append('file', this.fileList[0])
         importInfo.append('stmCode', checkGroupA[0].stmCode)
         importInfo.append('pmCode', this.itemData.pmcode)
-        importInfo.append('agentNo', this.saleNo)
-        this.missingInformation = '后台执行中，请稍后下载导入结果，查看数据'
-        this.missingFlag = false
-        setTimeout(function () {
-          that.missingInformation = ''
-          that.missingFlag = null
-        }, 3000)
-        this.uploadLoading = !this.uploadLoading
+        importInfo.append('agentNo', Vue.ls.get(USER_SALENO))
+        this.uploadLoading = !this.uploadLoading;
+        this.$alert(`<p style="text-align: left;"><span style="color:red">请稍后点击页面下方的“下载结果清单”按钮，查看导入结果。</span>
+             <br/>说明：涉及数据处理，需要一定时间。以导入10条数据为例，大约需3-5分钟。<br/>使用过程中，如有疑问和建议，欢迎随时反馈。</p>`, '数据上传中……', {
+                confirmButtonText: '好的，我知道了',
+                dangerouslyUseHTMLString: true,
+                callback: action => {}
+              });
         postAction('/customer/crs/import-crs/import-crs-info',importInfo).then(response => {
           console.log(response)
           this.uploadLoading = !this.uploadLoading
           if(response.code == 200){
-            this.missingInformation = '恭喜你，名单导入成功'
-            this.missingFlag = false
-            setTimeout(function () {
-              that.missingInformation = ''
-              that.missingFlag = null
-            }, 3000)
+            // this.missingInformation = '文件上传中……请稍后点击“下载结果清单”，查看导入结果。'
+            // this.missingFlag = false
+            // setTimeout(function () {
+            //   that.missingInformation = ''
+            //   that.missingFlag = null
+            // }, 3000)
+             this.$confirm('导入成功! ' + response.msg, '成功', {
+              confirmButtonText: '确定',
+              showCancelButton: false,
+              type: 'success'
+            }).then(() => {
+              
+            }).catch(() => {
+                    
+            });
+            this.fileList = []
           }else {
-            this.$message({
-              message: '导入失败! ' + response.msg,
-              type: 'error',
-              duration: 10000,
-              offset: 200
+            // this.$message({
+            //   message: '导入失败! ' + response.msg,
+            //   type: 'error',
+            //   duration: 10000,
+            //   offset: 200
+            // });
+            this.$confirm('导入失败! ' + response.msg, '失败', {
+              confirmButtonText: '确定',
+              showCancelButton: false,
+              type: 'error'
+            }).then(() => {
+              
+            }).catch(() => {
+                    
             });
             this.fileList = []
           }
@@ -340,6 +374,9 @@ export default {
         console.log(importInfo.getAll('stmCode'))
         console.log(importInfo.getAll('file'))
       }
+    },
+    handlePreview(file) {
+      console.log(file);
     },
     // 改变文件
     changeFile (files) {
@@ -369,7 +406,7 @@ export default {
         }, 3000)
       } else {
         this.downloadFileLoading = !this.downloadFileLoading
-        let params = {resultDownParam: this.downrange, agentNo: this.saleNo, pmCode: this.itemData.pmcode}
+        let params = {resultDownParam: this.downrange, agentNo: Vue.ls.get(USER_SALENO), pmCode: this.itemData.pmcode}
         console.log(params)
         this.downloadFileInformation = '申请导出成功，请耐心等待，名单马上下载'
         this.downloadFlag = false
@@ -377,7 +414,7 @@ export default {
           that.downloadFileInformation = ''
           that.downloadFlag = null
         }, 3000)
-        postAction('/customer/crs/import-crs/down/result',params).then(response => {
+        postAction('/customer/crs/import-crs/down/result',params,100000).then(response => {
           this.downloadFileLoading = !this.downloadFileLoading
           console.log(response)
           // 创建一个新的url，此url指向新建的Blob对象
@@ -451,6 +488,33 @@ export default {
        
       }).catch(error => {
         this.downloadLoading = !this.downloadLoading
+        console.log(error)
+      })
+    },
+    // 下载目标部门
+    downTemplateFileDepart () {
+      this.downloadLoadingDepart = !this.downloadLoadingDepart
+      let params = {saleNo: Vue.ls.get(USER_SALENO), pmCode: 'PM'+this.itemCode}
+      postAction('/customer/crs/depart/get-combatArea-list',params).then(response => {
+        console.log(response)
+        this.downloadLoadingDepart = !this.downloadLoadingDepart
+        if(response.code == 200){
+          this.downloadFileByBase64(response.data.base64Code,response.data.fileName)
+          this.$message({
+            message: '恭喜你，成功下载现有“目标部门”',
+            type: 'success',
+            offset: 200
+          });
+        } else {
+          this.$message({
+            message: '下载现有“目标部门”失败，请重新导',
+            type: 'error',
+            offset: 200
+          });
+        }
+       
+      }).catch(error => {
+        this.downloadLoadingDepart = !this.downloadLoadingDepart
         console.log(error)
       })
     },
@@ -536,11 +600,8 @@ export default {
 }
 .per-part {
   text-align: left;
-  margin-top: 35px;
+  margin-top: 25px;
   position: relative;
-  &:nth-child(2){
-    margin-top: 20px;
-  }
   .part {
     border-bottom: 2px solid #e8f4fc;
   }
@@ -575,7 +636,8 @@ export default {
     flex-direction: row;
     align-items: center;
     flex-wrap: nowrap;
-    padding: 0 12px;
+    padding: 0 12px 0 30px;
+    margin-top: -9px;
     span{
         display: inline-block;
         width: 450px;
@@ -597,13 +659,20 @@ export default {
       }
   }
 }
+.per-part.per-part-three{
+  margin-top: 35px;
+}
+.related-content + p{
+  margin: 8px 0;
+}
 .per-part-before{
   position: relative;
   min-height: 1px;
+  margin-top: 10px;
   &::before{
     content: attr(data-part);
     position: absolute;
-    top: -12px;
+    top: -10px;
     left: -42px;
     font-size: 28px;
     font-style: oblique;
@@ -647,14 +716,21 @@ export default {
         vertical-align: text-bottom;
     }
 }
-.part-button{
-    // display: block;
-    .down-template{
-      border: 1px solid #5daaff;
-      color: #5daaff;
-      background: white;
-    }
+.down-template{
+  border: 1px solid #5daaff;
+  color: #5daaff;
+  background: white;
+  margin-left: 30px;
+  padding: 10px 15px;
 }
+// .part-button{
+//     // display: block;
+//     .down-template{
+//       border: 1px solid #5daaff;
+//       color: #5daaff;
+//       background: white;
+//     }
+// }
 .red-i{
   color: red;
   font-style: normal;
@@ -670,7 +746,7 @@ export default {
     background: rgb(108 108 108 / 80%);
     z-index: 9;
     position: absolute;
-    top: -30px;
+    top: -15px;
     bottom: -30px;
     left: -65px;
     right: 0;
@@ -704,6 +780,23 @@ export default {
   color: #248c48;
   padding-left: 15px;
 }
+.show-dec {
+    background-image: -webkit-linear-gradient(top, #FF9E00, #FFC973);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 500;
+}
+.show-dec-write-f{
+  float: left;
+  line-height: 40px;
+}
+.show-dec-write-p{
+  float: left;
+  line-height: 25px;
+}
+.show-dec-writeF{
+  margin-left: 80px;
+}
 </style>
 
 <style lang="scss">
@@ -725,14 +818,24 @@ export default {
   .el-range-editor.el-input__inner{
     width: 332px;
   }
-  // .el-upload-list{
-  //     display: inline-block;
-  //     .el-upload-list__item-name{
-  //         min-width: 300px;
-  //     }
-  // }
+  .el-upload-list{
+      display: inline-block;
+      .el-upload-list__item-name{
+        line-height: 40px;
+        background-color: #F5F7FA;
+      }
+  }
   .el-upload-list__item{
     margin-top: 0;
+    background-color: #F5F7FA;
+    .el-icon-close{
+      display: inline-block !important;
+      top: 13px;
+      color: #fa1a03;
+      &::before{
+        content: "\e6d7";
+      }
+    }
   }
   .el-form-item__label{
     font-size: 16px;
@@ -747,8 +850,19 @@ export default {
     left: 300px;
   }
   .el-upload-list__item-name{
-    max-width: 272px;
+    // max-width: 272px;
     white-space: normal;
+  }
+  .el-upload-list__item .el-icon-upload-success{
+    color: #fff;
+  }
+  .el-form--inline .el-form-item{
+    display: block;
+  }
+  .demo-form-inline{
+    .el-form-item__content{
+        line-height: 20px;
+      }
   }
 }
 </style>
